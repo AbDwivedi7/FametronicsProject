@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -13,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.JOptionPane;
 
 public class DoLogin extends HttpServlet{
 
@@ -32,30 +32,37 @@ public class DoLogin extends HttpServlet{
 			
 			ResultSet rs = ps.executeQuery();
 			
+			rs.next();
+			String foundType = rs.getString(1);
 			
 			ArrayList<User> list = new ArrayList<User>();
+			if(password.equals(rs.getString("password"))) {
+				
+				
 			
-			if(rs.next()) {
-				if(password.equals(rs.getString("password"))) {
-					
+					 User UserDAO = new User();
+					 String name = rs.getString("name");
+					 UserDAO.setName(name);
+					 String email1 = rs.getString("email");
+					 UserDAO.setEmail(email1);
+					 String phone = rs.getString("phone");
+					 UserDAO.setPhone(phone);
+					 list.add(UserDAO);	
+					 
+					 request.setAttribute("data", list);
+					 RequestDispatcher rd = request.getRequestDispatcher("home.jsp");          
+					 rd.forward(request, response); 
 					
 				
-						 User UserDAO = new User();
-						 String name = rs.getString("name");
-						 UserDAO.setName(name);
-						 String email1 = rs.getString("email");
-						 UserDAO.setEmail(email1);
-						 String phone = rs.getString("phone");
-						 UserDAO.setPhone(phone);
-						 list.add(UserDAO);	
-					
-						
-					
-				}
 			}
-			 request.setAttribute("data", list);
-			 RequestDispatcher rd = request.getRequestDispatcher("home.jsp");          
-			 rd.forward(request, response);  
+			else {
+				RequestDispatcher rd = request.getRequestDispatcher("login.jsp");          
+				 rd.forward(request, response); 
+				 
+				
+			}
+			
+			  
 
 
 		}
